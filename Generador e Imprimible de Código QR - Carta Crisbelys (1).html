@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Tarjeta QR para Crisbelys ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;1,700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #0b0c16;
+            color: #e2e8f0;
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* Ambient Glow */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 30%, #2e0927 0%, #130a1e 60%, #0b0c16 100%);
+            z-index: -1;
+        }
+
+        /* Printable Card Style */
+        .printable-card {
+            background: #131221;
+            border: 2px solid rgba(255, 0, 127, 0.4);
+            box-shadow: 0 0 35px rgba(255, 0, 127, 0.25), inset 0 0 15px rgba(255, 0, 127, 0.1);
+        }
+
+        /* Neon Text Glow */
+        .neon-title {
+            color: #ffffff;
+            text-shadow: 0 0 8px #ffffff, 0 0 18px #ff007f, 0 0 30px #ff007f;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .neon-subtext {
+            color: #ffb3da;
+            text-shadow: 0 0 6px rgba(255, 0, 127, 0.6);
+        }
+
+        /* QR Frame */
+        #qrcode img, #qrcode canvas {
+            margin: 0 auto;
+            border-radius: 12px;
+            padding: 8px;
+            background: #ffffff;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
+        }
+
+        /* Print Media Styles */
+        @media print {
+            body {
+                background: none !important;
+                color: #000 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .bg-glow {
+                display: none !important;
+            }
+            .print-wrapper {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                min-height: 100vh;
+                padding: 0 !important;
+            }
+            .printable-card {
+                background: #0f0e1a !important;
+                border: 2px solid #ff007f !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                max-width: 450px !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-4 sm:p-8 relative">
+
+    <div class="bg-glow"></div>
+
+    <!-- Main Container -->
+    <div class="w-full max-w-4xl flex flex-col items-center gap-8 z-10">
+
+        <!-- Header Controls (No Print) -->
+        <header class="w-full text-center no-print space-y-3">
+            <h1 class="text-3xl sm:text-4xl font-bold neon-title tracking-wide">
+                Tarjeta Regalo QR para Crisbelys
+            </h1>
+            <p class="text-sm text-pink-200/80 max-w-xl mx-auto">
+                Ingresa el enlace donde alojaste tu carta (por ejemplo GitHub Pages, Netlify o Vercel) para generar un código QR escaneable y listo para imprimir o compartir.
+            </p>
+        </header>
+
+        <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Panel de Configuración (No Print) -->
+            <div class="lg:col-span-5 bg-slate-900/80 border border-pink-500/20 backdrop-blur-md p-6 rounded-2xl shadow-xl space-y-5 no-print">
+                <h2 class="text-lg font-semibold text-pink-300 flex items-center gap-2 border-b border-pink-500/20 pb-3">
+                    <i class="fas fa-sliders-h"></i> Personalizar Enlace QR
+                </h2>
+
+                <div class="space-y-2">
+                    <label for="linkInput" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                        URL / Enlace de la Carta
+                    </label>
+                    <div class="relative">
+                        <input type="url" id="linkInput" 
+                            class="w-full bg-black/50 border border-pink-500/40 rounded-xl px-4 py-3 pl-10 text-sm text-pink-100 placeholder-pink-300/40 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all"
+                            placeholder="https://tu-usuario.github.io/carta-crisbelys/"
+                            value="https://ejemplo.com/carta-crisbelys">
+                        <i class="fas fa-link absolute left-3.5 top-3.5 text-pink-400/60 text-sm"></i>
+                    </div>
+                    <p class="text-[11px] text-gray-400">
+                        Si aún no la has publicado, puedes dejar la URL de prueba y actualizarla cuando subas el archivo HTML.
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="noteInput" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                        Nota Corta para la Tarjeta
+                    </label>
+                    <textarea id="noteInput" rows="3"
+                        class="w-full bg-black/50 border border-pink-500/40 rounded-xl p-3 text-sm text-pink-100 placeholder-pink-300/40 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all resize-none"
+                        placeholder="Escribe un mensaje para el reverso o frente...">Escanea este código con la cámara de tu teléfono para abrir tu sorpresa especial. ❤️</textarea>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="pt-2 flex flex-col gap-3">
+                    <button onclick="window.print()" 
+                        class="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg shadow-pink-600/30 transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-print"></i> Imprimir Tarjeta Regalo
+                    </button>
+                    
+                    <button onclick="downloadQR()" 
+                        class="w-full bg-black/40 hover:bg-black/60 border border-pink-500/30 text-pink-300 font-semibold py-2.5 px-4 rounded-xl transition-all text-xs flex items-center justify-center gap-2">
+                        <i class="fas fa-download"></i> Descargar Solo la Imagen del QR
+                    </button>
+                </div>
+            </div>
+
+            <!-- Previsualización de la Tarjeta Imprimible -->
+            <div class="lg:col-span-7 w-full flex justify-center print-wrapper">
+                <div class="printable-card w-full max-w-md rounded-3xl p-8 flex flex-col items-center text-center relative overflow-hidden">
+                    
+                    <!-- Decoración Superior -->
+                    <div class="flex items-center justify-center gap-2 mb-4">
+                        <span class="h-[1px] w-12 bg-gradient-to-r from-transparent to-pink-500"></span>
+                        <i class="fas fa-heart text-pink-500 text-sm animate-pulse"></i>
+                        <span class="h-[1px] w-12 bg-gradient-to-l from-transparent to-pink-500"></span>
+                    </div>
+
+                    <!-- Encabezado con Nombre -->
+                    <h2 class="text-3xl font-bold neon-title tracking-wider mb-1">
+                        Crisbelys
+                    </h2>
+                    <p class="text-xs uppercase tracking-widest text-pink-300/80 mb-6 font-semibold">
+                        Una Carta Especial Para Ti
+                    </p>
+
+                    <!-- Ilustración Corazón Neón -->
+                    <div class="relative w-28 h-28 mb-6 flex items-center justify-center">
+                        <svg class="w-full h-full text-pink-500 filter drop-shadow-[0_0_12px_rgba(255,0,127,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <i class="fas fa-qrcode absolute text-white text-xl"></i>
+                    </div>
+
+                    <!-- Contenedor del Código QR -->
+                    <div class="my-2 p-3 bg-white/5 rounded-2xl border border-pink-500/30">
+                        <div id="qrcode" class="flex justify-center items-center"></div>
+                    </div>
+
+                    <!-- Indicador de Escaneo -->
+                    <p class="text-xs text-pink-300 font-semibold mt-3 flex items-center gap-1.5">
+                        <i class="fas fa-camera text-pink-400"></i> Escanea con la cámara de tu celular
+                    </p>
+
+                    <!-- Nota Personalizada -->
+                    <div class="mt-5 pt-4 border-t border-pink-500/20 w-full">
+                        <p id="cardNoteDisplay" class="text-xs text-gray-300 leading-relaxed italic">
+                            Escanea este código con la cámara de tu teléfono para abrir tu sorpresa especial. ❤️
+                        </p>
+                    </div>
+
+                    <!-- Pie de la Tarjeta -->
+                    <div class="mt-6 text-[10px] text-pink-400/60 uppercase tracking-widest font-semibold">
+                        Hecho con amor • Tlanex
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer class="no-print text-center text-xs text-gray-500 mt-8">
+        Plantilla interactiva para Crisbelys ❤️
+    </footer>
+
+    <script>
+        let qrcodeObj = null;
+
+        function generateQR() {
+            const url = document.getElementById('linkInput').value.trim() || "https://ejemplo.com/carta-crisbelys";
+            const qrContainer = document.getElementById('qrcode');
+            
+            qrContainer.innerHTML = ''; // Limpiar previo
+
+            qrcodeObj = new QRCode(qrContainer, {
+                text: url,
+                width: 170,
+                height: 170,
+                colorDark : "#0f0e1a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        // Actualización dinámica de la nota
+        document.getElementById('noteInput').addEventListener('input', (e) => {
+            const display = document.getElementById('cardNoteDisplay');
+            display.textContent = e.target.value || "Escanea este código con la cámara de tu teléfono para abrir tu sorpresa especial. ❤️";
+        });
+
+        // Actualización dinámica de la URL
+        document.getElementById('linkInput').addEventListener('input', () => {
+            generateQR();
+        });
+
+        // Función para descargar la imagen del QR
+        function downloadQR() {
+            const img = document.querySelector('#qrcode img');
+            if (img && img.src) {
+                const link = document.createElement('a');
+                link.href = img.src;
+                link.download = 'QR_Carta_Crisbelys.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                const canvas = document.querySelector('#qrcode canvas');
+                if (canvas) {
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL("image/png");
+                    link.download = 'QR_Carta_Crisbelys.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+        }
+
+        // Generar QR al cargar
+        window.onload = () => {
+            generateQR();
+        };
+    </script>
+</body>
+</html>
