@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Crisbelys ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Courier Prime & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #0b0c16;
+            color: #e2e8f0;
+            font-family: 'Courier Prime', monospace;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Ambient Glow Layer */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 28%, #31082a 0%, #160a22 55%, #0b0c16 100%);
+            z-index: -2;
+        }
+
+        /* Canvas background */
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Heart Pulse & Neon Glow */
+        .neon-heart-svg {
+            filter: drop-shadow(0 0 12px #ff007f) 
+                    drop-shadow(0 0 28px rgba(255, 0, 127, 0.75)) 
+                    drop-shadow(0 0 48px rgba(255, 0, 85, 0.5));
+            animation: heartPulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes heartPulse {
+            0% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 10px #ff007f) 
+                        drop-shadow(0 0 22px rgba(255, 0, 127, 0.7)) 
+                        drop-shadow(0 0 35px rgba(255, 0, 85, 0.4));
+            }
+            100% {
+                transform: scale(1.045);
+                filter: drop-shadow(0 0 16px #ff007f) 
+                        drop-shadow(0 0 35px rgba(255, 0, 127, 0.9)) 
+                        drop-shadow(0 0 60px rgba(255, 0, 85, 0.7));
+            }
+        }
+
+        /* Glowing Name Text inside Neon Heart */
+        .neon-text {
+            font-family: 'Courier Prime', monospace;
+            color: #ffffff;
+            text-shadow: 
+                0 0 6px #ffffff,
+                0 0 12px #ffffff,
+                0 0 22px #ff007f,
+                0 0 36px #ff007f,
+                0 0 50px #ff007f;
+            animation: textGlow 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            0% { 
+                opacity: 0.92; 
+                text-shadow: 0 0 5px #fff, 0 0 15px #ff007f, 0 0 25px #ff007f; 
+            }
+            100% { 
+                opacity: 1; 
+                text-shadow: 0 0 8px #fff, 0 0 22px #ff007f, 0 0 40px #ff007f, 0 0 55px #ff007f; 
+            }
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: rgba(22, 17, 36, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
+                        inset 0 0 20px rgba(255, 0, 127, 0.05);
+            border-radius: 1.5rem;
+        }
+
+        /* Floating tap hearts */
+        .click-heart {
+            position: fixed;
+            pointer-events: none;
+            color: #ff2e93;
+            animation: floatUp 1.6s ease-out forwards;
+            font-size: 1.4rem;
+            z-index: 1000;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+            }
+            50% {
+                opacity: 0.9;
+                transform: translate(-50%, -90px) scale(1.2) rotate(12deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -160px) scale(1.5) rotate(-12deg);
+            }
+        }
+
+        /* Smooth custom scrollbar for text card if needed on small displays */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 0, 127, 0.35);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center relative px-4 py-6 sm:py-8">
+
+    <!-- Background Layer & Stars Canvas -->
+    <div class="bg-glow"></div>
+    <canvas id="stars-canvas"></canvas>
+
+    <!-- Top Floating Audio Button -->
+    <header class="w-full max-w-lg flex justify-end items-center z-20 mb-2">
+        <button id="musicBtn" class="flex items-center gap-2 bg-black/40 hover:bg-black/60 border border-white/10 px-4 py-2 rounded-full transition-all duration-300 backdrop-blur-md shadow-lg text-xs sm:text-sm text-pink-300">
+            <i id="musicIcon" class="fas fa-music text-pink-500"></i>
+            <span id="musicText">Música de fondo</span>
+        </button>
+    </header>
+
+    <!-- Main Letter Display -->
+    <main class="w-full max-w-lg flex flex-col items-center flex-grow justify-center z-10">
+        
+        <!-- Glowing Neon Heart Section -->
+        <div class="relative flex items-center justify-center my-4 cursor-pointer group" id="mainHeart">
+            <svg class="w-64 h-64 sm:w-72 sm:h-72 neon-heart-svg transition-transform duration-300 group-hover:scale-105" viewBox="0 0 24 24" fill="none" stroke="#ff007f" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            
+            <!-- Centered Glowing Text "Crisbelys" -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none pb-1">
+                <span class="neon-text text-2xl sm:text-3xl font-semibold tracking-wide">Crisbelys</span>
+            </div>
+        </div>
+
+        <!-- Glassmorphism Card with Exact Text -->
+        <article class="glass-card w-full p-6 sm:p-8 text-gray-200 text-sm sm:text-base leading-relaxed tracking-wide shadow-2xl relative my-2">
+            <div class="space-y-4 custom-scrollbar max-h-[65vh] overflow-y-auto pr-1">
+                <p class="text-pink-100 font-semibold">Para el amor de mi vida,</p>
+                
+                <p>
+                    Crisbelys... leer tu carta hizo que se me dibujara una sonrisa gigante, de esas que no se borran fácil. Me encantó cada palabra, y saber que haces un esfuerzo tan grande por escribir solo para dejarme un recuerdo hace que esta cartita sea uno de los tesoros más grandes que tengo.
+                </p>
+                
+                <p>
+                    A mí también me encantan los atardeceres, y cada vez que veo uno no puedo evitar pensar en tus ojos, que son de lo más hermoso que mis ojos han visto. Y tranquila por el bolígrafo negro, te lo dejaré robar las veces que quieras si a cambio sigues regalándome esa sonrisa tan bonita y esos detalles que me alegran los días.
+                </p>
+                
+                <p>
+                    Siento exactamente lo mismo: aunque parezca que te conozco de toda la vida, cada momento a tu lado es un regalo enorme y una bendición. Esa cartita la voy a guardar por muchísimo tiempo (y te aseguro que ese 'hasta que ya no me quieras' va a tardar una eternidad en llegar, porque lo nuestro apenas comienza). Gracias por ser tan increíble, por tus detalles y por este pedacito de tu corazón hecho palabras.
+                </p>
+
+                <div class="pt-3 space-y-1">
+                    <p class="text-pink-200">Con todo mi amor infinito,</p>
+                    <p class="font-semibold text-white flex items-center gap-1.5">
+                        Quien te ama eternamente <span class="text-red-500 text-lg animate-pulse">❤️</span>
+                    </p>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <!-- Footer Note -->
+    <footer class="w-full max-w-lg text-center mt-6 z-10">
+        <div class="inline-flex items-center gap-1.5 bg-black/40 border border-white/10 px-4 py-1.5 rounded-full text-xs text-gray-300 backdrop-blur-md shadow-md">
+            <span>❤️ Hecho con amor en</span>
+            <span class="font-semibold text-white tracking-wide">Tlanex</span>
+        </div>
+    </footer>
+
+    <!-- Tone.js for soft ambient musical synth -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <script>
+        // --- Starry Night Particles Background ---
+        const canvas = document.getElementById('stars-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Star {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.4;
+                this.baseAlpha = Math.random() * 0.7 + 0.2;
+                this.alpha = this.baseAlpha;
+                this.speedY = -(Math.random() * 0.25 + 0.05);
+                this.speedX = (Math.random() - 0.5) * 0.15;
+                this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+                this.twinkleAngle = Math.random() * Math.PI * 2;
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+
+                // Soft Twinkling
+                this.twinkleAngle += this.twinkleSpeed;
+                this.alpha = this.baseAlpha + Math.sin(this.twinkleAngle) * 0.3;
+
+                // Screen Wrap
+                if (this.y < 0) this.y = canvas.height;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, Math.min(1, this.alpha));
+                ctx.fillStyle = '#ffcbe8';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (this.size > 1.6) {
+                    ctx.shadowBlur = 6;
+                    ctx.shadowColor = '#ff007f';
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        function initStars() {
+            stars = [];
+            const count = Math.floor((canvas.width * canvas.height) / 8500);
+            for (let i = 0; i < Math.min(count, 110); i++) {
+                stars.push(new Star());
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => {
+                s.update();
+                s.draw();
+            });
+            requestAnimationFrame(animateStars);
+        }
+
+        initStars();
+        animateStars();
+
+        // --- Interactive Click/Tap Floating Hearts ---
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#musicBtn')) return;
+            createFloatingHeart(e.clientX, e.clientY);
+        });
+
+        document.getElementById('mainHeart').addEventListener('click', (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const offsetX = (Math.random() - 0.5) * 50;
+                    const offsetY = (Math.random() - 0.5) * 50;
+                    createFloatingHeart(centerX + offsetX, centerY + offsetY);
+                }, i * 100);
+            }
+        });
+
+        function createFloatingHeart(x, y) {
+            const heart = document.createElement('div');
+            heart.className = 'click-heart';
+            
+            const heartIcons = ['❤️', '💖', '💕', '💗', '✨'];
+            heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 1600);
+        }
+
+        // --- Romantic Ambient Synth Audio (Tone.js) ---
+        let isPlayingMusic = false;
+        let synth, loop;
+
+        function setupAudio() {
+            synth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sine" },
+                envelope: {
+                    attack: 1.8,
+                    decay: 2.2,
+                    sustain: 0.7,
+                    release: 3.5
+                }
+            }).toDestination();
+            
+            synth.volume.value = -18; // Soft background level
+
+            const chords = [
+                ["C4", "E4", "G4", "B4"],
+                ["A3", "C4", "E4", "G4"],
+                ["F3", "A3", "C4", "E4"],
+                ["G3", "B3", "D4", "F4"]
+            ];
+
+            let index = 0;
+            loop = new Tone.Loop(time => {
+                synth.triggerAttackRelease(chords[index], "2m", time);
+                index = (index + 1) % chords.length;
+            }, "2m");
+        }
+
+        const musicBtn = document.getElementById('musicBtn');
+        const musicIcon = document.getElementById('musicIcon');
+        const musicText = document.getElementById('musicText');
+
+        musicBtn.addEventListener('click', async () => {
+            if (!synth) {
+                setupAudio();
+            }
+
+            await Tone.start();
+
+            if (!isPlayingMusic) {
+                Tone.Transport.start();
+                loop.start(0);
+                isPlayingMusic = true;
+                musicIcon.className = "fas fa-pause text-pink-400 animate-pulse";
+                musicText.textContent = "Pausar Música";
+                musicBtn.classList.add('bg-pink-600/20', 'border-pink-500/40');
+            } else {
+                Tone.Transport.stop();
+                isPlayingMusic = false;
+                musicIcon.className = "fas fa-music text-pink-500";
+                musicText.textContent = "Música de fondo";
+                musicBtn.classList.remove('bg-pink-600/20', 'border-pink-500/40');
+            }
+        });
+    </script>
+</body>
+</html>
